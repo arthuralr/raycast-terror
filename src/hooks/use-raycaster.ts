@@ -6,40 +6,50 @@ const SCREEN_WIDTH = 640;
 const SCREEN_HEIGHT = 480;
 const MAP_WIDTH = 24;
 const MAP_HEIGHT = 24;
+const TEX_WIDTH = 64;
+const TEX_HEIGHT = 64;
 
 const MAP = [
-  [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
-  [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-  [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-  [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-  [1,0,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1,1,0,1],
-  [1,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,0,1,0,1],
-  [1,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,0,1,0,1],
-  [1,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,0,1,0,1],
-  [1,0,0,0,1,1,0,1,1,0,0,0,0,0,0,0,0,1,1,0,1,1,0,1],
-  [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-  [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-  [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-  [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-  [1,0,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1,1,0,1],
-  [1,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,0,1,0,1],
-  [1,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,0,1,0,1],
-  [1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,0,1,0,1],
-  [1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1],
-  [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-  [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-  [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-  [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-  [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-  [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+  [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,2,2,2,2,2,0,0,0,0,0,0,0,0,2,2,2,2,2,0,4],
+  [4,0,0,0,2,0,0,0,2,0,0,0,0,0,0,0,0,2,0,0,0,2,0,4],
+  [4,0,0,0,2,0,0,0,2,0,0,0,0,0,0,0,0,2,0,0,0,2,0,4],
+  [4,0,0,0,2,0,0,0,2,0,0,0,0,0,0,0,0,2,0,0,0,2,0,4],
+  [4,0,0,0,2,2,0,2,2,0,0,0,0,0,0,0,0,2,2,0,2,2,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1,1,0,4],
+  [4,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,0,1,0,4],
+  [4,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,0,1,0,4],
+  [4,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,0,1,0,4],
+  [4,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4]
+];
+
+type Sprite = {
+  x: number;
+  y: number;
+  texture: number;
+};
+
+const sprites: Sprite[] = [
+  { x: 20.5, y: 11.5, texture: 5 }, // enemy
 ];
 
 const MINI_MAP_SCALE = 8;
 const MOVE_SPEED_FACTOR = 3.0;
 const ROT_SPEED_FACTOR = 2.0;
 
-const WALL_COLOR_PRIMARY = 'hsl(0 0% 60%)';
-const WALL_COLOR_SECONDARY = 'hsl(0 0% 50%)';
 const CEILING_COLOR = 'hsl(210 10% 25%)';
 const FLOOR_COLOR = 'hsl(210 10% 35%)';
 
@@ -51,18 +61,9 @@ export function useRaycaster(
 ) {
   const keys = useRef({ w: false, a: false, s: false, d: false });
   const player = useRef({ ...PLAYER_START });
+  const textures = useRef<HTMLImageElement[]>([]);
 
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key in keys.current) (keys.current as any)[e.key] = true;
-    };
-    const handleKeyUp = (e: KeyboardEvent) => {
-      if (e.key in keys.current) (keys.current as any)[e.key] = false;
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('keyup', handleKeyUp);
-
     const canvas = canvasRef.current;
     const mapCanvas = mapCanvasRef.current;
     if (!canvas || !mapCanvas) return;
@@ -78,7 +79,33 @@ export function useRaycaster(
     
     let lastTime = 0;
     let animationFrameId: number;
-    
+    let zBuffer: number[] = new Array(SCREEN_WIDTH);
+
+    const textureUrls = [
+      "https://picsum.photos/seed/stone1/64/64",
+      "https://picsum.photos/seed/stone2/64/64",
+      "https://picsum.photos/seed/wood/64/64",
+      "https://picsum.photos/seed/brick/64/64",
+      "https://picsum.photos/seed/enemy/64/64",
+    ];
+
+    function loadTextures() {
+      return new Promise<void>((resolve) => {
+        let loadedCount = 0;
+        textureUrls.forEach((url, index) => {
+          const img = new Image();
+          img.onload = () => {
+            loadedCount++;
+            if (loadedCount === textureUrls.length) {
+              resolve();
+            }
+          };
+          img.src = url;
+          textures.current[index] = img;
+        });
+      });
+    }
+
     const gameLoop = (timestamp: number) => {
       if (!ctx) {
         animationFrameId = requestAnimationFrame(gameLoop);
@@ -90,6 +117,7 @@ export function useRaycaster(
       const deltaTime = frameTime / 1000.0;
       
       updatePlayer(deltaTime);
+      updateSprites(deltaTime);
       render(ctx, mapCtx);
 
       animationFrameId = requestAnimationFrame(gameLoop);
@@ -127,6 +155,28 @@ export function useRaycaster(
         p.planeY = oldPlaneX * Math.sin(rotSpeed) + p.planeY * Math.cos(rotSpeed);
       }
     };
+
+    const updateSprites = (deltaTime: number) => {
+        const p = player.current;
+        const enemy = sprites[0];
+        const moveSpeed = deltaTime * (MOVE_SPEED_FACTOR / 2); // Slower than player
+
+        const dirX = p.x - enemy.x;
+        const dirY = p.y - enemy.y;
+        const dist = Math.sqrt(dirX * dirX + dirY * dirY);
+
+        if (dist > 1) { // Stop if too close
+            const moveX = (dirX / dist) * moveSpeed;
+            const moveY = (dirY / dist) * moveSpeed;
+            
+            if (MAP[Math.floor(enemy.x + moveX)][Math.floor(enemy.y)] === 0) {
+                enemy.x += moveX;
+            }
+            if (MAP[Math.floor(enemy.x)][Math.floor(enemy.y + moveY)] === 0) {
+                enemy.y += moveY;
+            }
+        }
+    }
 
     const render = (ctx: CanvasRenderingContext2D, mapCtx: CanvasRenderingContext2D | null) => {
       const p = player.current;
@@ -167,7 +217,7 @@ export function useRaycaster(
         }
 
         let hit = 0;
-        let side = 0; // Was a NS or a EW wall hit?
+        let side = 0;
         while (hit === 0) {
           if (sideDistX < sideDistY) {
             sideDistX += deltaDistX;
@@ -182,16 +232,58 @@ export function useRaycaster(
         }
         
         const perpWallDist = (side === 0) ? (sideDistX - deltaDistX) : (sideDistY - deltaDistY);
+        zBuffer[x] = perpWallDist;
 
         const lineHeight = Math.floor(SCREEN_HEIGHT / perpWallDist);
         const drawStart = Math.max(0, -lineHeight / 2 + SCREEN_HEIGHT / 2);
         const drawEnd = Math.min(SCREEN_HEIGHT - 1, lineHeight / 2 + SCREEN_HEIGHT / 2);
         
-        ctx.strokeStyle = side === 1 ? WALL_COLOR_SECONDARY : WALL_COLOR_PRIMARY;
-        ctx.beginPath();
-        ctx.moveTo(x, drawStart);
-        ctx.lineTo(x, drawEnd);
-        ctx.stroke();
+        const wallNum = MAP[mapX][mapY] - 1;
+        
+        let wallX;
+        if (side === 0) wallX = p.y + perpWallDist * rayDirY;
+        else wallX = p.x + perpWallDist * rayDirX;
+        wallX -= Math.floor(wallX);
+        
+        let texX = Math.floor(wallX * TEX_WIDTH);
+        if (side === 0 && rayDirX > 0) texX = TEX_WIDTH - texX - 1;
+        if (side === 1 && rayDirY < 0) texX = TEX_WIDTH - texX - 1;
+        
+        ctx.drawImage(textures.current[wallNum], texX, 0, 1, TEX_HEIGHT, x, drawStart, 1, drawEnd - drawStart);
+        if (side === 1) {
+            ctx.fillStyle = "rgba(0,0,0,0.3)";
+            ctx.fillRect(x, drawStart, 1, drawEnd - drawStart);
+        }
+      }
+
+      // Sprites
+      sprites.sort((a, b) => ((p.x - a.x) ** 2 + (p.y - a.y) ** 2) - ((p.x - b.x) ** 2 + (p.y - b.y) ** 2));
+
+      for (let i = 0; i < sprites.length; i++) {
+        const spriteX = sprites[i].x - p.x;
+        const spriteY = sprites[i].y - p.y;
+        
+        const invDet = 1.0 / (p.planeX * p.dirY - p.dirX * p.planeY);
+        
+        const transformX = invDet * (p.dirY * spriteX - p.dirX * spriteY);
+        const transformY = invDet * (-p.planeY * spriteX + p.planeX * spriteY);
+        
+        if (transformY > 0) {
+            const spriteScreenX = Math.floor((SCREEN_WIDTH / 2) * (1 + transformX / transformY));
+            const spriteHeight = Math.abs(Math.floor(SCREEN_HEIGHT / transformY));
+            const drawStartY = Math.floor(-spriteHeight / 2 + SCREEN_HEIGHT / 2);
+            
+            const spriteWidth = Math.abs(Math.floor(SCREEN_HEIGHT / transformY));
+            const drawStartX = Math.floor(-spriteWidth / 2 + spriteScreenX);
+            const drawEndX = Math.floor(spriteWidth / 2 + spriteScreenX);
+            
+            for (let stripe = drawStartX; stripe < drawEndX; stripe++) {
+                const texX = Math.floor(256 * (stripe - (-spriteWidth / 2 + spriteScreenX)) * TEX_WIDTH / spriteWidth) / 256;
+                if (stripe > 0 && stripe < SCREEN_WIDTH && transformY < zBuffer[stripe]) {
+                    ctx.drawImage(textures.current[sprites[i].texture], texX, 0, 1, TEX_HEIGHT, stripe, drawStartY, 1, spriteHeight);
+                }
+            }
+        }
       }
 
       if (mapCtx) {
@@ -213,9 +305,27 @@ export function useRaycaster(
         // Draw player
         mapCtx.fillStyle = 'hsla(var(--ring), 0.9)';
         mapCtx.fillRect(player.current.x * MINI_MAP_SCALE - 2, player.current.y * MINI_MAP_SCALE - 2, 4, 4);
+
+        // Draw sprites
+        mapCtx.fillStyle = 'hsla(0, 100%, 50%, 0.9)';
+        for(const sprite of sprites) {
+            mapCtx.fillRect(sprite.x * MINI_MAP_SCALE - 2, sprite.y * MINI_MAP_SCALE - 2, 4, 4);
+        }
     }
 
-    animationFrameId = requestAnimationFrame(gameLoop);
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key in keys.current) (keys.current as any)[e.key] = true;
+    };
+    const handleKeyUp = (e: KeyboardEvent) => {
+      if (e.key in keys.current) (keys.current as any)[e.key] = false;
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+
+    loadTextures().then(() => {
+        animationFrameId = requestAnimationFrame(gameLoop);
+    });
 
     return () => {
       cancelAnimationFrame(animationFrameId);
