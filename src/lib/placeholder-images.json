@@ -5,6 +5,12 @@
       "description": "Brick wall texture for raycaster",
       "imageUrl": "https://picsum.photos/seed/wall/64/64",
       "imageHint": "brick wall"
+    },
+    {
+      "id": "enemy-sprite",
+      "description": "Sprite for the enemy character",
+      "imageUrl": "https://picsum.photos/seed/enemy/64/64",
+      "imageHint": "monster sprite"
     }
   ]
 }
