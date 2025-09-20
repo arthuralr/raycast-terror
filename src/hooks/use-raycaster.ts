@@ -40,7 +40,7 @@ const ROT_SPEED_FACTOR = 3.0;
 
 const WALL_COLOR_PRIMARY = 'hsl(var(--accent))';
 const WALL_COLOR_SECONDARY = 'hsl(var(--primary))';
-const CEILING_COLOR = 'hsl(var(--background))';
+const CEILING_COLOR = 'hsl(225 38% 19% / 0.4)';
 const FLOOR_COLOR = 'hsl(var(--primary))';
 
 const PLAYER_START = { x: 3.5, y: 3.5, dirX: -1, dirY: 0, planeX: 0, planeY: 0.66 };
