@@ -43,7 +43,7 @@ type Sprite = {
 };
 
 const sprites: Sprite[] = [
-  { x: 20.5, y: 11.5, texture: 5 }, // enemy
+  { x: 20.5, y: 11.5, texture: 4 }, // enemy
 ];
 
 const MINI_MAP_SCALE = 8;
