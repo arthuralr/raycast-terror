@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 
 const SCREEN_WIDTH = 640;
 const SCREEN_HEIGHT = 480;
@@ -35,13 +35,22 @@ const MAP = [
 ];
 
 const MINI_MAP_SCALE = 8;
+const MOVE_SPEED_FACTOR = 5.0;
+const ROT_SPEED_FACTOR = 3.0;
+
+const WALL_COLOR_PRIMARY = 'hsl(var(--accent))';
+const WALL_COLOR_SECONDARY = 'hsl(var(--primary))';
+const CEILING_COLOR = 'hsl(var(--background))';
+const FLOOR_COLOR = 'hsl(var(--primary))';
+
+const PLAYER_START = { x: 3.5, y: 3.5, dirX: -1, dirY: 0, planeX: 0, planeY: 0.66 };
 
 export function useRaycaster(
   canvasRef: React.RefObject<HTMLCanvasElement>,
   mapCanvasRef: React.RefObject<HTMLCanvasElement>
 ) {
   const keys = useRef({ w: false, a: false, s: false, d: false });
-  const player = useRef({ x: 3.5, y: 3.5, dirX: -1, dirY: 0, planeX: 0, planeY: 0.66 });
+  const player = useRef({ ...PLAYER_START });
   
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -58,7 +67,7 @@ export function useRaycaster(
     const mapCanvas = mapCanvasRef.current;
     if (!canvas || !mapCanvas) return;
 
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext('2d', { alpha: false });
     const mapCtx = mapCanvas.getContext('2d');
     if (!ctx || !mapCtx) return;
 
@@ -71,13 +80,20 @@ export function useRaycaster(
     let animationFrameId: number;
 
     const gameLoop = (timestamp: number) => {
-      if (!ctx || !mapCtx) return;
-
-      const deltaTime = (timestamp - lastTime) / 1000;
+      if (!ctx) return;
+      const frameTime = timestamp - lastTime;
       lastTime = timestamp;
+      const deltaTime = frameTime / 1000.0;
+      
+      updatePlayer(deltaTime);
+      render(ctx, mapCtx);
 
-      const moveSpeed = deltaTime * 5.0;
-      const rotSpeed = deltaTime * 3.0;
+      animationFrameId = requestAnimationFrame(gameLoop);
+    };
+
+    const updatePlayer = (deltaTime: number) => {
+      const moveSpeed = deltaTime * MOVE_SPEED_FACTOR;
+      const rotSpeed = deltaTime * ROT_SPEED_FACTOR;
 
       const p = player.current;
       const k = keys.current;
@@ -90,15 +106,7 @@ export function useRaycaster(
         if (MAP[Math.floor(p.x - p.dirX * moveSpeed)][Math.floor(p.y)] === 0) p.x -= p.dirX * moveSpeed;
         if (MAP[Math.floor(p.x)][Math.floor(p.y - p.dirY * moveSpeed)] === 0) p.y -= p.dirY * moveSpeed;
       }
-      if (k.a) {
-        const oldDirX = p.dirX;
-        p.dirX = p.dirX * Math.cos(rotSpeed) - p.dirY * Math.sin(rotSpeed);
-        p.dirY = oldDirX * Math.sin(rotSpeed) + p.dirY * Math.cos(rotSpeed);
-        const oldPlaneX = p.planeX;
-        p.planeX = p.planeX * Math.cos(rotSpeed) - p.planeY * Math.sin(rotSpeed);
-        p.planeY = oldPlaneX * Math.sin(rotSpeed) + p.planeY * Math.cos(rotSpeed);
-      }
-      if (k.d) {
+      if (k.d) { // Turn right
         const oldDirX = p.dirX;
         p.dirX = p.dirX * Math.cos(-rotSpeed) - p.dirY * Math.sin(-rotSpeed);
         p.dirY = oldDirX * Math.sin(-rotSpeed) + p.dirY * Math.cos(-rotSpeed);
@@ -106,13 +114,23 @@ export function useRaycaster(
         p.planeX = p.planeX * Math.cos(-rotSpeed) - p.planeY * Math.sin(-rotSpeed);
         p.planeY = oldPlaneX * Math.sin(-rotSpeed) + p.planeY * Math.cos(-rotSpeed);
       }
+      if (k.a) { // Turn left
+        const oldDirX = p.dirX;
+        p.dirX = p.dirX * Math.cos(rotSpeed) - p.dirY * Math.sin(rotSpeed);
+        p.dirY = oldDirX * Math.sin(rotSpeed) + p.dirY * Math.cos(rotSpeed);
+        const oldPlaneX = p.planeX;
+        p.planeX = p.planeX * Math.cos(rotSpeed) - p.planeY * Math.sin(rotSpeed);
+        p.planeY = oldPlaneX * Math.sin(rotSpeed) + p.planeY * Math.cos(rotSpeed);
+      }
+    };
+
+    const render = (ctx: CanvasRenderingContext2D, mapCtx: CanvasRenderingContext2D | null) => {
+      const p = player.current;
       
-      const ceilingColor = "#1E2640";
-      const floorColor = "#293462";
-      ctx.fillStyle = ceilingColor;
+      ctx.fillStyle = CEILING_COLOR;
       ctx.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT / 2);
-      ctx.fillStyle = floorColor;
-      ctx.fillRect(0, SCREEN_HEIGHT / 2, SCREEN_WIDTH, SCREEN_HEIGHT / 2);
+      ctx.fillStyle = FLOOR_COLOR;
+      ctx.fillRect(0, SCREEN_HEIGHT / 2, SCREEN_WIDTH, SCREEN_HEIGHT);
 
       for (let x = 0; x < SCREEN_WIDTH; x++) {
         const cameraX = 2 * x / SCREEN_WIDTH - 1;
@@ -122,14 +140,11 @@ export function useRaycaster(
         let mapX = Math.floor(p.x);
         let mapY = Math.floor(p.y);
 
-        let sideDistX, sideDistY;
         const deltaDistX = (rayDirX === 0) ? 1e30 : Math.abs(1 / rayDirX);
         const deltaDistY = (rayDirY === 0) ? 1e30 : Math.abs(1 / rayDirY);
-        let perpWallDist;
-
+        
         let stepX, stepY;
-        let hit = 0;
-        let side = 0;
+        let sideDistX, sideDistY;
 
         if (rayDirX < 0) {
           stepX = -1;
@@ -146,6 +161,8 @@ export function useRaycaster(
           sideDistY = (mapY + 1.0 - p.y) * deltaDistY;
         }
 
+        let hit = 0;
+        let side = 0; // Was a NS or a EW wall hit?
         while (hit === 0) {
           if (sideDistX < sideDistY) {
             sideDistX += deltaDistX;
@@ -159,41 +176,36 @@ export function useRaycaster(
           if (MAP[mapX][mapY] > 0) hit = 1;
         }
         
-        perpWallDist = (side === 0) ? (sideDistX - deltaDistX) : (sideDistY - deltaDistY);
+        const perpWallDist = (side === 0) ? (sideDistX - deltaDistX) : (sideDistY - deltaDistY);
         const lineHeight = Math.floor(SCREEN_HEIGHT / perpWallDist);
-        let drawStart = -lineHeight / 2 + SCREEN_HEIGHT / 2;
-        if (drawStart < 0) drawStart = 0;
-        let drawEnd = lineHeight / 2 + SCREEN_HEIGHT / 2;
-        if (drawEnd >= SCREEN_HEIGHT) drawEnd = SCREEN_HEIGHT - 1;
+        const drawStart = Math.max(0, -lineHeight / 2 + SCREEN_HEIGHT / 2);
+        const drawEnd = Math.min(SCREEN_HEIGHT -1, lineHeight / 2 + SCREEN_HEIGHT / 2);
 
-        let color = '#F1E5C1'; // Base wall color from accent
-        if (side === 1) {
-            color = '#D9CFAD'; // Darker shade for Y-side walls
-        }
-
-        ctx.strokeStyle = color;
+        ctx.strokeStyle = side === 1 ? WALL_COLOR_SECONDARY : WALL_COLOR_PRIMARY;
         ctx.beginPath();
         ctx.moveTo(x, drawStart);
         ctx.lineTo(x, drawEnd);
         ctx.stroke();
       }
 
-      // Draw mini-map
-      mapCtx.clearRect(0, 0, mapCanvas.width, mapCanvas.height);
-      for (let y = 0; y < MAP_HEIGHT; y++) {
-        for (let x = 0; x < MAP_WIDTH; x++) {
-          if (MAP[x][y] > 0) {
-            mapCtx.fillStyle = 'rgba(255, 241, 193, 0.7)';
-            mapCtx.fillRect(x * MINI_MAP_SCALE, y * MINI_MAP_SCALE, MINI_MAP_SCALE, MINI_MAP_SCALE);
-          }
-        }
+      if (mapCtx) {
+        drawMiniMap(mapCtx);
       }
-
-      mapCtx.fillStyle = 'rgba(255, 100, 100, 0.9)';
-      mapCtx.fillRect(p.x * MINI_MAP_SCALE - 2, p.y * MINI_MAP_SCALE - 2, 4, 4);
-
-      animationFrameId = requestAnimationFrame(gameLoop);
-    };
+    }
+    
+    const drawMiniMap = (mapCtx: CanvasRenderingContext2D) => {
+        mapCtx.clearRect(0, 0, mapCanvas.width, mapCanvas.height);
+        for (let y = 0; y < MAP_HEIGHT; y++) {
+            for (let x = 0; x < MAP_WIDTH; x++) {
+                if (MAP[x][y] > 0) {
+                mapCtx.fillStyle = 'hsla(var(--accent-foreground), 0.7)';
+                mapCtx.fillRect(x * MINI_MAP_SCALE, y * MINI_MAP_SCALE, MINI_MAP_SCALE, MINI_MAP_SCALE);
+                }
+            }
+        }
+        mapCtx.fillStyle = 'hsla(var(--destructive), 0.9)';
+        mapCtx.fillRect(player.current.x * MINI_MAP_SCALE - 2, player.current.y * MINI_MAP_SCALE - 2, 4, 4);
+    }
 
     animationFrameId = requestAnimationFrame(gameLoop);
 
