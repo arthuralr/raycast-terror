@@ -38,30 +38,12 @@ const MINI_MAP_SCALE = 8;
 
 export function useRaycaster(
   canvasRef: React.RefObject<HTMLCanvasElement>,
-  mapCanvasRef: React.RefObject<HTMLCanvasElement>,
-  textureUrl?: string
+  mapCanvasRef: React.RefObject<HTMLCanvasElement>
 ) {
   const keys = useRef({ w: false, a: false, s: false, d: false });
   const player = useRef({ x: 3.5, y: 3.5, dirX: -1, dirY: 0, planeX: 0, planeY: 0.66 });
-  const texture = useRef<HTMLImageElement | null>(null);
-  const textureData = useRef<ImageData | null>(null);
-
+  
   useEffect(() => {
-    if (textureUrl) {
-      const img = new Image();
-      img.crossOrigin = "Anonymous";
-      img.src = textureUrl;
-      img.onload = () => {
-        texture.current = img;
-        const tempCanvas = document.createElement('canvas');
-        tempCanvas.width = img.width;
-        tempCanvas.height = img.height;
-        const tempCtx = tempCanvas.getContext('2d');
-        tempCtx?.drawImage(img, 0, 0);
-        textureData.current = tempCtx?.getImageData(0, 0, img.width, img.height) || null;
-      };
-    }
-
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key in keys.current) (keys.current as any)[e.key] = true;
     };
@@ -125,7 +107,6 @@ export function useRaycaster(
         p.planeY = oldPlaneX * Math.sin(-rotSpeed) + p.planeY * Math.cos(-rotSpeed);
       }
       
-      // Draw 3D scene
       const ceilingColor = "#1E2640";
       const floorColor = "#293462";
       ctx.fillStyle = ceilingColor;
@@ -185,48 +166,16 @@ export function useRaycaster(
         let drawEnd = lineHeight / 2 + SCREEN_HEIGHT / 2;
         if (drawEnd >= SCREEN_HEIGHT) drawEnd = SCREEN_HEIGHT - 1;
 
-        if (textureData.current) {
-          const tex = texture.current!;
-          const texD = textureData.current!;
-          let wallX;
-          if (side === 0) {
-            wallX = p.y + perpWallDist * rayDirY;
-          } else {
-            wallX = p.x + perpWallDist * rayDirX;
-          }
-          wallX -= Math.floor(wallX);
-          
-          let texX = Math.floor(wallX * tex.width);
-          if ((side === 0 && rayDirX > 0) || (side === 1 && rayDirY < 0)) {
-            texX = tex.width - texX - 1;
-          }
-
-          const step = tex.height / lineHeight;
-          let texPos = (drawStart - SCREEN_HEIGHT / 2 + lineHeight / 2) * step;
-          for (let y = drawStart; y < drawEnd; y++) {
-            const texY = Math.floor(texPos) & (tex.height - 1);
-            texPos += step;
-            const colorIndex = (texY * texD.width + texX) * 4;
-
-            let r = texD.data[colorIndex];
-            let g = texD.data[colorIndex + 1];
-            let b = texD.data[colorIndex + 2];
-
-            if (side === 1) { // Darken Y-side walls for depth
-              r = Math.floor(r * 0.7);
-              g = Math.floor(g * 0.7);
-              b = Math.floor(b * 0.7);
-            }
-            
-            ctx.fillStyle = `rgb(${r},${g},${b})`;
-            ctx.fillRect(x, y, 1, 1);
-          }
-        } else {
-          let color = 'rgb(100,100,100)';
-          if (side === 1) color = 'rgb(50,50,50)';
-          ctx.fillStyle = color;
-          ctx.fillRect(x, drawStart, 1, drawEnd - drawStart + 1);
+        let color = '#F1E5C1'; // Base wall color from accent
+        if (side === 1) {
+            color = '#D9CFAD'; // Darker shade for Y-side walls
         }
+
+        ctx.strokeStyle = color;
+        ctx.beginPath();
+        ctx.moveTo(x, drawStart);
+        ctx.lineTo(x, drawEnd);
+        ctx.stroke();
       }
 
       // Draw mini-map
@@ -253,5 +202,5 @@ export function useRaycaster(
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
     };
-  }, [canvasRef, mapCanvasRef, textureUrl]);
+  }, [canvasRef, mapCanvasRef]);
 }

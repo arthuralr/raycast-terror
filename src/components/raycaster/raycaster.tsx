@@ -2,14 +2,12 @@
 
 import { useRef, useEffect } from 'react';
 import { useRaycaster } from '@/hooks/use-raycaster';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 export function Raycaster() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const mapCanvasRef = useRef<HTMLCanvasElement>(null);
-  const textureUrl = PlaceHolderImages.find(img => img.id === 'wall-texture')?.imageUrl;
   
-  useRaycaster(canvasRef, mapCanvasRef, textureUrl);
+  useRaycaster(canvasRef, mapCanvasRef);
 
   return (
     <div className="relative w-full aspect-[4/3] bg-black rounded-lg shadow-2xl shadow-primary/30 border-2 border-accent/30 overflow-hidden">
