@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef } from 'react';
 
 const SCREEN_WIDTH = 640;
 const SCREEN_HEIGHT = 480;
@@ -38,8 +38,8 @@ const MINI_MAP_SCALE = 8;
 const MOVE_SPEED_FACTOR = 5.0;
 const ROT_SPEED_FACTOR = 3.0;
 
-const WALL_COLOR_PRIMARY = 'hsl(var(--accent))';
-const WALL_COLOR_SECONDARY = 'hsl(var(--primary))';
+const WALL_COLOR_PRIMARY = 'hsl(0 0% 80%)';
+const WALL_COLOR_SECONDARY = 'hsl(0 0% 60%)';
 const CEILING_COLOR = 'hsl(225 38% 19% / 0.4)';
 const FLOOR_COLOR = 'hsl(var(--primary))';
 
